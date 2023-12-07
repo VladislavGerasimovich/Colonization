@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private void OnCollisionEnter(Collision collision)
+    private int _spreadPoint;
+
+    private void Start()
     {
-        if (collision.collider.TryGetComponent(out Unit unit))
-        {
-            transform.SetParent(unit.transform);
-            transform.localPosition = new Vector3(5f, 10f, 5f);
-            unit.AchieveGoal();
-            Debug.Log("соприкоснулись");
-        }
+        _spreadPoint = 1;
+    }
+
+    public void MountParents(Transform parent)
+    {
+        transform.SetParent(parent);
+        transform.localPosition = new Vector3(_spreadPoint, _spreadPoint, _spreadPoint);
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
     }
 }

@@ -14,16 +14,17 @@ public class Plantation : MonoBehaviour
     private int _randomPositionZ;
 
     private int _wait;
-    private object _delay;
+    private WaitForSeconds _delay;
 
     private List<Enemy> _enemies;
+    private int _maxCountEnemies;
 
     private void Start()
     {
+        _maxCountEnemies = 5;
         _enemies = new List<Enemy>();
         _wait = 3;
         _delay = new WaitForSeconds(_wait);
-
         StartCoroutine(CreateEnemies());
     }
 
@@ -44,7 +45,10 @@ public class Plantation : MonoBehaviour
     {
         while (true)
         {
-            CreateEnemy();
+            if(_enemies.Count < _maxCountEnemies)
+            {
+                CreateEnemy();
+            }
 
             yield return _delay;
         }
