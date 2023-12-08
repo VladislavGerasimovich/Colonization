@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Base : MonoBehaviour
 {
-    [SerializeField] private GameObject _unit;
-    [SerializeField] private Plantation _plantation;
+    [SerializeField] private Unit _unit;
 
+    private Scanner _scanner;
     private int _whiteEnemies;
     private int _maxCountWhiteEnemies;
     private int _hypotheticalCounter;
 
-    private List<GameObject> _units;
+    private List<Unit> _units;
     private List<Enemy> _enemies;
 
     private int _countOfUnits;
@@ -24,15 +24,16 @@ public class Base : MonoBehaviour
     {
         foreach (var unit in _units)
         {
-            unit.GetComponent<Unit>().BroughtMaterial -= IncreaseCount;
+            unit.BroughtMaterial -= IncreaseCount;
         }
     }
 
     private void Start()
     {
+        _scanner = GetComponent<Scanner>();
         _maxCountWhiteEnemies = 5;
         _enemies = new List<Enemy>();
-        _units = new List<GameObject>();   
+        _units = new List<Unit>();   
         _spreadPositionX = 10f;
         _spreadPositionY = 5f;
         _countOfUnits = 3;
@@ -50,10 +51,10 @@ public class Base : MonoBehaviour
     {
         for (int i = 0; i < _countOfUnits; i++)
         {
-            GameObject unit = Instantiate(_unit, _unitStartPosition, Quaternion.identity);
+            Unit unit = Instantiate(_unit, _unitStartPosition, Quaternion.identity);
             unit.transform.SetParent(transform);
-            unit.GetComponent<Unit>().MountStartPosition(_unitStartPosition);
-            unit.GetComponent<Unit>().BroughtMaterial += IncreaseCount;
+            unit.MountStartPosition(_unitStartPosition);
+            unit.BroughtMaterial += IncreaseCount;
             _unitStartPosition.z += _spreadPositionY;
             _units.Add(unit);
         }
@@ -65,10 +66,15 @@ public class Base : MonoBehaviour
         {
             if(_enemies.Count == 0 && _hypotheticalCounter < _maxCountWhiteEnemies)
             {
-                ScanPlantation();
+                Enemy enemy = _scanner.Scan();
+
+                if(enemy != null)
+                {
+                    _enemies.Add(enemy);
+                }
             }
 
-            if(_enemies.Count > 0)
+            if (_enemies.Count > 0)
             {
                 if (TryGetUnit())
                 {
@@ -98,17 +104,5 @@ public class Base : MonoBehaviour
         }
 
         return isUnit;
-    }
-
-    private void ScanPlantation()
-    {
-        Enemy enemy = _plantation.TryGetEnemy();
-
-        if(enemy == null)
-        {
-            return;
-        }
-
-        _enemies.Add(enemy);
     }
 }

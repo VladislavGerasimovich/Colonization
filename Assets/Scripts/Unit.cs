@@ -64,12 +64,17 @@ public class Unit : MonoBehaviour
             {
                 _isBusy = false;
                 _isAchieved = false;
-                BroughtMaterial?.Invoke();
-                _enemy.Die();
+                GatheringEnemies();
                 StopCoroutine(MoveJob);
             }
 
             yield return null;
         }
+    }
+
+    private void GatheringEnemies()
+    {
+        BroughtMaterial?.Invoke();
+        _enemy.Die();
     }
 }
