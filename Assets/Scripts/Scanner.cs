@@ -6,15 +6,15 @@ public class Scanner : MonoBehaviour
 {
     [SerializeField] private Plantation _plantation;
 
-    public Enemy Scan()
+    public Resource Scan()
     {
-        Enemy enemy = _plantation.TryGetEnemy();
+        Resource resource = _plantation.GetResource();
 
-        if (enemy == null)
+        if (resource == null)
         {
             return null;
         }
 
-        return enemy;
+        return resource;
     }
 }

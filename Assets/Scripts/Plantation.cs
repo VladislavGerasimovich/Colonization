@@ -4,71 +4,64 @@ using UnityEngine;
 
 public class Plantation : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemy;
+    [SerializeField] private Resource _resourcePrefab;
 
     private Vector3 _startPosition;
 
-    private int _maxPositionX;
-    private int _maxPositionZ;
     private int _randomPositionX;
     private int _randomPositionZ;
 
-    private int _wait;
     private WaitForSeconds _delay;
 
-    private List<Enemy> _enemies;
+    private List<Resource> _resource;
     private int _maxCountEnemies;
 
     private void Start()
     {
         _maxCountEnemies = 5;
-        _enemies = new List<Enemy>();
-        _wait = 3;
-        _delay = new WaitForSeconds(_wait);
-        StartCoroutine(CreateEnemies());
+        _resource = new List<Resource>();
+        _delay = new WaitForSeconds(3);
+        StartCoroutine(CreateResources());
     }
 
-    public Enemy TryGetEnemy()
+    public Resource GetResource()
     {
-        Enemy[] enemies = _enemies.ToArray();
-
-        if (enemies.Length == 0)
+        if (_resource.Count == 0)
         {
             return null;
         }
 
-        _enemies.RemoveAt(0);
-        return enemies[0];
+        Resource resource = _resource[0];
+        _resource.RemoveAt(0);
+        return resource;
     }
 
-    private IEnumerator CreateEnemies()
+    private IEnumerator CreateResources()
     {
         while (true)
         {
-            if(_enemies.Count < _maxCountEnemies)
+            if(_resource.Count < _maxCountEnemies)
             {
-                CreateEnemy();
+                CreateResource();
             }
 
             yield return _delay;
         }
     }
 
-    private void CreateEnemy()
+    private void CreateResource()
     {
         GenerateRandomPosition();
-        GameObject enemy = Instantiate(_enemy, transform.position, Quaternion.identity);
-        enemy.transform.SetParent(transform);
-        enemy.transform.localPosition = _startPosition;
-        _enemies.Add(enemy.GetComponent<Enemy>());
+        Resource resource = Instantiate(_resourcePrefab, _startPosition, Quaternion.identity, transform);
+        _resource.Add(resource);
     }
 
     private void GenerateRandomPosition()
     {
-        _maxPositionX = 90;
-        _maxPositionZ = 60;
+        int _maxPositionX = 90;
+        int _maxPositionZ = 60;
         _randomPositionX = Random.Range(0, _maxPositionX);
         _randomPositionZ = Random.Range(0, _maxPositionZ);
-        _startPosition = new Vector3(_randomPositionX, 0, _randomPositionZ);
+        _startPosition = transform.TransformPoint(_randomPositionX, 0, _randomPositionZ);
     }
 }

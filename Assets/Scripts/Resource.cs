@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Resource : MonoBehaviour
 {
-    private int _spreadPoint;
+    private int _point;
 
     private void Start()
     {
-        _spreadPoint = 1;
+        _point = 1;
     }
 
-    public void MountParents(Transform parent)
+    public void SetParents(Transform parent)
     {
         transform.SetParent(parent);
-        transform.localPosition = new Vector3(_spreadPoint, _spreadPoint, _spreadPoint);
+        transform.localPosition = new Vector3(_point, _point, _point);
     }
 
     public void Die()

@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Base : MonoBehaviour
 {
-    [SerializeField] private Unit _unit;
+    [SerializeField] private Unit _unitPrefab;
 
     private Scanner _scanner;
-    private int _whiteEnemies;
-    private int _maxCountWhiteEnemies;
-    private int _hypotheticalCounter;
+    private int _resources;
+    private int _maxCountResourcesExtracted;
+    private int _count;
 
     private List<Unit> _units;
-    private List<Enemy> _enemies;
+    private List<Resource> _resource;
 
     private int _countOfUnits;
     private Vector3 _unitStartPosition;
@@ -31,8 +31,8 @@ public class Base : MonoBehaviour
     private void Start()
     {
         _scanner = GetComponent<Scanner>();
-        _maxCountWhiteEnemies = 5;
-        _enemies = new List<Enemy>();
+        _maxCountResourcesExtracted = 5;
+        _resource = new List<Resource>();
         _units = new List<Unit>();   
         _spreadPositionX = 10f;
         _spreadPositionY = 5f;
@@ -44,15 +44,14 @@ public class Base : MonoBehaviour
 
     private void IncreaseCount()
     {
-        _whiteEnemies++;
+        _resources++;
     }
 
     private void CreateUnits()
     {
         for (int i = 0; i < _countOfUnits; i++)
         {
-            Unit unit = Instantiate(_unit, _unitStartPosition, Quaternion.identity);
-            unit.transform.SetParent(transform);
+            Unit unit = Instantiate(_unitPrefab, _unitStartPosition, Quaternion.identity, transform);
             unit.MountStartPosition(_unitStartPosition);
             unit.BroughtMaterial += IncreaseCount;
             _unitStartPosition.z += _spreadPositionY;
@@ -64,23 +63,23 @@ public class Base : MonoBehaviour
     {
         while(true)
         {
-            if(_enemies.Count == 0 && _hypotheticalCounter < _maxCountWhiteEnemies)
+            if(_resource.Count == 0 && _count < _maxCountResourcesExtracted)
             {
-                Enemy enemy = _scanner.Scan();
+                Resource resource = _scanner.Scan();
 
-                if(enemy != null)
+                if(resource != null)
                 {
-                    _enemies.Add(enemy);
+                    _resource.Add(resource);
                 }
             }
 
-            if (_enemies.Count > 0)
+            if (_resource.Count > 0)
             {
-                if (TryGetUnit())
+                if (TryGetUnit(out Unit unit))
                 {
-                    _hypotheticalCounter++;
-                    _freeUnit.StartMove(_enemies[0]);
-                    _enemies.RemoveAt(0);
+                    _count++;
+                    unit.StartMove(_resource[0]);
+                    _resource.RemoveAt(0);
                 }
             }
 
@@ -88,21 +87,19 @@ public class Base : MonoBehaviour
         }
     }
 
-    private bool TryGetUnit()
+    private bool TryGetUnit(out Unit unit)
     {
-        bool isUnit = false;
-
         for (int i = 0; i < _units.Count; i++)
         {
-            if (_units[i].GetComponent<Unit>().CheckAvailability())
+            if (_units[i].GetComponent<Unit>().IsBusy == false)
             {
-                _freeUnit = _units[i].GetComponent<Unit>();
-                isUnit = true;
+                unit = _units[i];
 
-                break;
+                return true;
             }
         }
 
-        return isUnit;
+        unit = null;
+        return false;
     }
 }

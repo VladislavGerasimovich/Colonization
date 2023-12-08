@@ -5,18 +5,18 @@ using UnityEngine.Events;
 
 public class Unit : MonoBehaviour
 {
-    public event UnityAction BroughtMaterial;
-
-    private bool _isBusy;
-
-    private Coroutine MoveJob;
+    private Coroutine _moveJob;
     private Vector3 _startPosition;
     private Vector3 _targetPosition;
     private float _speed;
     private bool _isAchieved;
     private float _permissibleValue;
 
-    private Enemy _enemy;
+    private Resource _resource;
+
+    public event UnityAction BroughtMaterial;
+
+    public bool IsBusy { get; private set; }
 
     private void Start()
     {
@@ -24,27 +24,17 @@ public class Unit : MonoBehaviour
         _permissibleValue = 0.3f;
     }
 
-    public bool CheckAvailability()
+    public void StartMove(Resource resource)
     {
-        return _isBusy == false;
-    }
-
-    public void StartMove(Enemy enemy)
-    {
-        _enemy = enemy;
-        _isBusy = true;
-        _targetPosition = _enemy.transform.position;
-        MoveJob = StartCoroutine(Move());
+        _resource = resource;
+        IsBusy = true;
+        _targetPosition = _resource.transform.position;
+        _moveJob = StartCoroutine(Move());
     }
 
     public void MountStartPosition(Vector3 position)
     {
         _startPosition = position;
-    }
-
-    private void AchieveGoal()
-    {
-        _isAchieved = true;
     }
 
     private IEnumerator Move()
@@ -57,24 +47,24 @@ public class Unit : MonoBehaviour
             {
                 _isAchieved = true;
                 _targetPosition = _startPosition;
-                _enemy.MountParents(transform);
+                _resource.SetParents(transform);
             }
 
             if(_isAchieved == true && transform.position == _startPosition)
             {
-                _isBusy = false;
+                IsBusy = false;
                 _isAchieved = false;
-                GatheringEnemies();
-                StopCoroutine(MoveJob);
+                GatheringResources();
+                StopCoroutine(_moveJob);
             }
 
             yield return null;
         }
     }
 
-    private void GatheringEnemies()
+    private void GatheringResources()
     {
         BroughtMaterial?.Invoke();
-        _enemy.Die();
+        _resource.Die();
     }
 }
