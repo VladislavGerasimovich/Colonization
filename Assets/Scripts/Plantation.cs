@@ -18,9 +18,9 @@ public class Plantation : MonoBehaviour
 
     private void Start()
     {
-        _maxCountEnemies = 5;
+        _maxCountEnemies = 10;
         _resource = new List<Resource>();
-        _delay = new WaitForSeconds(3);
+        _delay = new WaitForSeconds(1);
         StartCoroutine(CreateResources());
     }
 

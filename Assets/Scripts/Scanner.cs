@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Scanner : MonoBehaviour
 {
-    [SerializeField] private Plantation _plantation;
+    private Plantation _plantation;
+
+    private void Awake()
+    {
+        _plantation = GameObject.FindWithTag("Plantation").GetComponent<Plantation>();
+    }
 
     public Resource Scan()
     {
