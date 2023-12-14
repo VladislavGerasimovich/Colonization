@@ -7,7 +7,7 @@ using static UnityEngine.GraphicsBuffer;
 public class Unit : MonoBehaviour
 {
     private Coroutine _miningJob;
-    private Coroutine _createBaseJob;
+    private Coroutine _goToBuildJob;
     private Vector3 _startPosition;
     private Vector3 _targetPosition;
     private float _speed;
@@ -39,7 +39,7 @@ public class Unit : MonoBehaviour
     {
         IsBusy = true;
         _targetPosition = position;
-        _createBaseJob = StartCoroutine(CreateBase());
+        _goToBuildJob = StartCoroutine(GoToBuild());
     }
 
     public void MountStartPosition(Vector3 position)
@@ -47,9 +47,20 @@ public class Unit : MonoBehaviour
         _startPosition = position;
     }
 
+    private void Move(Vector3 target)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, target, _speed * Time.deltaTime);
+    }
+
+    private void GatheringResources()
+    {
+        BroughtMaterial?.Invoke();
+        _resource.Die();
+    }
+
     private IEnumerator Mining()
     {
-        while (true)
+        while (enabled)
         {
             Move(_targetPosition);
 
@@ -72,9 +83,9 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private IEnumerator CreateBase()
+    private IEnumerator GoToBuild()
     {
-        while (true)
+        while (enabled)
         {
             Move(_targetPosition);
 
@@ -82,21 +93,10 @@ public class Unit : MonoBehaviour
             {
                 IsBusy = false;
                 CameToBuild?.Invoke();
-                StopCoroutine(_createBaseJob);
+                StopCoroutine(_goToBuildJob);
             }
 
             yield return null;
         }
-    }
-
-    private void Move(Vector3 target)
-    {
-        transform.position = Vector3.MoveTowards(transform.position, target, _speed * Time.deltaTime);
-    }
-
-    private void GatheringResources()
-    {
-        BroughtMaterial?.Invoke();
-        _resource.Die();
     }
 }

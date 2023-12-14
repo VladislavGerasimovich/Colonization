@@ -19,7 +19,6 @@ public class Mining : MonoBehaviour
         _resource = new List<Resource>();
         _scanner = GetComponent<Scanner>();
         _base = GetComponent<Base>();
-
         StartCoroutine(Work());
     }
 
@@ -30,7 +29,7 @@ public class Mining : MonoBehaviour
 
     private IEnumerator Work()
     {
-        while (true)
+        while (enabled)
         {
             if (_resource.Count == 0 && Count < _maxCountResourcesExtracted)
             {

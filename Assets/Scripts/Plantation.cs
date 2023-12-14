@@ -14,11 +14,11 @@ public class Plantation : MonoBehaviour
     private WaitForSeconds _delay;
 
     private List<Resource> _resource;
-    private int _maxCountEnemies;
+    private int _maxCountResources;
 
     private void Start()
     {
-        _maxCountEnemies = 10;
+        _maxCountResources = 10;
         _resource = new List<Resource>();
         _delay = new WaitForSeconds(1);
         StartCoroutine(CreateResources());
@@ -33,20 +33,8 @@ public class Plantation : MonoBehaviour
 
         Resource resource = _resource[0];
         _resource.RemoveAt(0);
+
         return resource;
-    }
-
-    private IEnumerator CreateResources()
-    {
-        while (true)
-        {
-            if(_resource.Count < _maxCountEnemies)
-            {
-                CreateResource();
-            }
-
-            yield return _delay;
-        }
     }
 
     private void CreateResource()
@@ -63,5 +51,18 @@ public class Plantation : MonoBehaviour
         _randomPositionX = Random.Range(0, _maxPositionX);
         _randomPositionZ = Random.Range(0, _maxPositionZ);
         _startPosition = transform.TransformPoint(_randomPositionX, 0, _randomPositionZ);
+    }
+
+    private IEnumerator CreateResources()
+    {
+        while (enabled)
+        {
+            if(_resource.Count != _maxCountResources)
+            {
+                CreateResource();
+            }
+
+            yield return _delay;
+        }
     }
 }
